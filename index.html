@@ -7,7 +7,14 @@
 </style>
 </head>
 <body>
-<div id="webterminal" style="width:100%;position:fixed;top:0px;bottom:0px"></div>
+<div id="webterminal" style="width:100%;position:fixed;top:0px;bottom:0px">
+	<div style="position:fixed; bottom:-25px;right:5px;">
+	<div class="start-screen-recording"><div><div class="rec-dot"></div><span>开始录制</span></div></div>
+	</div>
+</div>
+
+<script src="https://api.apowersoft.cn/screen-recorder?lang=zh" defer></script>
+
 <script type="text/javascript" src="https://trade.mql5.com/trade/widget.js"></script>
 <script type="text/javascript">
     new MetaTraderWebTerminal( "webterminal", {
