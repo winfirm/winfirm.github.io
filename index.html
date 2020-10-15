@@ -5,24 +5,17 @@
 <title>MetaTrader 4 platforms</title>
 <style type="text/css">
 </style>
+<script src="https://api.apowersoft.cn/screen-recorder?lang=zh" defer></script>
 </head>
 <body>
-<div id="webterminal" style="width:100%;position:fixed;top:0px;bottom:0px">
-	<div style="position:fixed; bottom:-25px;right:5px;">
-	<div class="start-screen-recording"><div><div class="rec-dot"></div><span>开始录制</span></div></div>
-	</div>
-</div>
 
-<script src="https://api.apowersoft.cn/screen-recorder?lang=zh" defer></script>
+<frameset rows="45%,45%,10%">
+  <frame src="/example/html/frame_a.html">
+  <frame src="/example/html/frame_b.html">
+  <frame src="/example/html/frame_c.html">
+</frameset>
+	
+<div class="start-screen-recording"><div><div class="rec-dot"></div><span>开始录制</span></div></div>
 
-<script type="text/javascript" src="https://trade.mql5.com/trade/widget.js"></script>
-<script type="text/javascript">
-    new MetaTraderWebTerminal( "webterminal", {
-        version: 4,
-        startMode: "login",
-        language: "en",
-        colorScheme: "black_on_white"
-    } );
-</script>
 </body>
 </html>
