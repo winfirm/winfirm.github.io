@@ -19,22 +19,32 @@
 		}
 		.chart {
 			float: left;
-			border: #cccccc solid 1px;
+			border: #e1e1e1 solid 1px;
 			padding: 0px;
+			margin-bottom: 5px;
 		}
 		.pannel {
 			position: absolute;
-			padding: 3px;
+			padding: 1px 3px;
 			clear: both;
 			color: #333;
-			background-color: #26a69a;
-			font-size: 16px;
+			background-color: #99cc99;
+			font-size: 14px;
 			z-index: 3;
+		}
+		#timeframe{
+			position: fixed;
+			top: 6px;
+			right: 15px;
+			z-index:3;
+			background-color: #999999;
+			padding: 1px 5px;
 		}
 	</style>
 </head>
 
 <body>
+	<div id="timeframe">SW</div>
 	<div id="loading">loading...</div>
 	<div id="chart_div">
 		<div id="chart1" class="chart"></div>
@@ -71,8 +81,22 @@
 		<div id="chart32" class="chart"></div>
 	</div>
 	<script type="text/javascript">
+		$("#timeframe").click(function () {
+				console.log("timeframe clicked.")
+				if(dataType==0){
+					dataType=1;
+				}else if(dataType==1){
+					dataType=0;
+				}
+
+				show_all_result();
+		});
+
 		function set_load_result(symbol, idx, datas) {
 			let chartid = 'chart' + (parseInt(idx) + 1);
+
+			$("#" + chartid).empty();
+
 			$("#" + chartid).append("<div class='pannel'>" + symbol + "</div>");
 			$("#" + chartid).click(function () {
 				window.location.href = 'metatrader4://chart/' + symbol;
@@ -87,12 +111,12 @@
 				},
 			};
 			show_candle(chart, datas.datas, mainPriceOption);
-			show_mas(chart, datas.mas, ['#99ff00', '#ff0000', '#0000ff'], mainPriceOption);
+			show_mas(chart, datas.mas, ['#0099ff', '#ff0000', '#0000ff'], mainPriceOption);
 
 			const macdPriceOption = {
 				scaleMargins: {
 					top: 0.75,
-					bottom: 0.05
+					bottom: 0.01
 				},
 			};
 			show_histogram(chart, datas.macds[2], macdPriceOption);
@@ -149,6 +173,15 @@
 			histogramSeries.setData(histogram);
 		}
 
+		function load_all_datas(symbols) {
+			$("#loading").show();
+			$("#chart_div").hide();
+			for (let idx in symbols) {
+				let symbol = symbols[idx];
+				load_item_datas(symbol, idx);
+			}
+		}
+
 		function load_item_datas(symbol, idx) {
 			let url = 'https://www.winfirm.com.cn/serv/index_json?symbol=' + symbol + '&times=D1';
 			$.ajax({
@@ -157,32 +190,22 @@
 				data: '',
 				traditional: true,
 				success: (json) => {
-					datas_all[symbol] = { symbol, idx, datas: JSON.parse(json).datas2 };
+					datas_all[symbol] = { symbol, idx, result: JSON.parse(json)};
 					count++;
 					$("#loading").text('loading ' + count + '/' + SYMBOLS.length);
 					if (count == SYMBOLS.length) {
 						$("#loading").hide();
 						$("#chart_div").show();
-						for (let idx in SYMBOLS) {
-							let item = datas_all[SYMBOLS[idx]];
-							set_load_result(item.symbol, item.idx, item.datas);
-						}
+						show_all_result();
 					}
 				}
 			});
 		}
 
-		function show_item_result(symbol, idx) {
-			let item = datas_all[symbol];
-			set_load_result(item.symbol, idx, item.datas);
-		}
-
-		function load_all_datas(symbols) {
-			$("#loading").show();
-			$("#chart_div").hide();
-			for (let idx in symbols) {
-				let symbol = symbols[idx];
-				load_item_datas(symbol, idx);
+		function show_all_result(){
+			for (let idx in SYMBOLS) {
+				let item = datas_all[SYMBOLS[idx]];
+				set_load_result(item.symbol, item.idx, dataType==0? item.result.datas1: item.result.datas2);
 			}
 		}
 
@@ -208,7 +231,7 @@
 					rightBarStaysOnScroll: true,
 					fixLeftEdge: false,
 					alignLabels: false,
-					borderVisible: true,
+					borderVisible: false,
 					tickMarkFormatter: (time, tickMarkType, locale) => {
 						if (LightweightCharts.isUTCTimestamp(time)) {
 							return timestampToString(time);
@@ -261,9 +284,10 @@
 		}
 		//store
 		const datas_all = {};
+		var dataType=0;
 		var count = 0;
 		var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "GOLD", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
-		// SYMBOLS= ["EURUSD", "GBPUSD","AUDUSD", "NZDUSD","USDJPY", "USDCAD","USDCHF","GOLD"];
+		//SYMBOLS= ["EURUSD", "GBPUSD","AUDUSD", "NZDUSD","USDJPY", "USDCAD","USDCHF","GOLD"];
 		//run
 		load_all_datas(SYMBOLS);
 	</script>
