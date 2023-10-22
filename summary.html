@@ -25,23 +25,24 @@
 			padding: 0px;
 			margin-bottom: 5px;
 		}
-		.pannel {
+		.chart .pannel {
 			position: absolute;
 			padding: 1px 3px;
 			clear: both;
 			color: #333;
-			background-color: #99cc99;
-			font-size: 12px;
+			background-color: #33cc00;
+			font-size: 8px;
 			z-index: 3;
+			font-weight: bold;
 		}
 		#timeframe{
 			position: fixed;
-			font-size: 13px;
-			top: 0px;
-			right: 2px;
+			font-size: 10px;
+			right: 0px;
 			z-index:3;
-			background-color: #999999;
+			background-color: #cc0000;
 			padding: 1px 5px;
+			
 		}
 	</style>
 </head>
@@ -125,15 +126,15 @@
 			show_histogram(chart, datas.macds[2], macdPriceOption);
 			let macd = datas.macds[0];
 			let signal = datas.macds[1];
-			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'true');
+			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'macd');
 
-			// chart.timeScale().fitContent();
+			//chart.timeScale().fitContent();
 		}
 
 		function show_candle(chart, datas, priceOption) {
 			const candlestickSeries = chart.addCandlestickSeries({
-				upColor: '#26a69a', downColor: '#ef5350', borderVisible: false,
-				wickUpColor: '#26a69a', wickDownColor: '#ef5350',
+				upColor: '#cc0000', downColor: '#33cc00', borderVisible: false,
+				wickUpColor: '#cc0000', wickDownColor: '33cc00',
 				priceFormat: {
 					type: 'price',
 					precision: 6
@@ -163,9 +164,9 @@
 
 		function show_histogram(chart, histogram, priceOption) {
 			let histogramSeries = chart.addHistogramSeries({
-				color: '#26a69a',
+				color: '#33cc00',
 				priceLineVisible: false,
-				priceScaleId: '',
+				priceScaleId: 'macd',
 				priceFormat: {
 					type: 'volume',
 					precision: 6
@@ -223,14 +224,14 @@
 		}
 
 		function getChartOption() {
-			let width = (screen.width > 500 ? (screen.width - 30) / 5.0 : (screen.width - 20) / 2.75)
-			let height = (screen.width > 500 ? screen.height / 3.0 : screen.height / 7.5)
+			let width = (screen.width > 500 ? (screen.width - 30) / 5.0 : (screen.width - 20) / 2.25)
+			let height = (screen.width > 500 ? screen.height / 3.0 : screen.height / 6.6)
 			return {
 				width,
 				height,
 				timeScale: {
-					rightOffset: screen.width > 500 ? 5 : 3,
-					barSpacing: screen.width > 500 ? 4.25 : 3.15,
+					rightOffset: screen.width > 500 ? 5 : 1,
+					barSpacing: screen.width > 500 ? 4.25 :3.75,
 					rightBarStaysOnScroll: true,
 					fixLeftEdge: false,
 					alignLabels: false,
@@ -273,17 +274,17 @@
 					}
 				},
 				crosshair: {
-					mode: LightweightCharts.CrosshairMode.Normal,
+					mode: 2,
+					vertLine:{
+						visible:false
+					},
+					horzLine:{
+						visible:false
+					}
 				},
 				handleScroll: {
 					horzTouchDrag: false,
 					vertTouchDrag: false,
-					pressedMouseMove: true,
-					mouseWheel: false
-				},
-				kineticScroll: {
-					touch: true,
-					mouse: false
 				}
 			};
 		}
