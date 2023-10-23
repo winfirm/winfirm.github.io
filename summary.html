@@ -103,7 +103,7 @@
 
 			$("#" + chartid).append("<div class='pannel'>" + symbol + "</div>");
 			$("#" + chartid).click(function () {
-				window.location.href = 'metatrader4://chart/' + symbol;
+				window.location.href = 'metatrader5://chart/' + symbol;
 			});
 
 			const chart = LightweightCharts.createChart(document.getElementById(chartid), getChartOption());
