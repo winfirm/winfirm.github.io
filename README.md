@@ -1,3 +1,3 @@
 # winfirm.github.io
 
-page for https://winfirm.net
+This site is just for WebApp test! https://winfirm.net
