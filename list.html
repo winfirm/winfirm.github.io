@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Symbol List</title>
@@ -8,10 +9,10 @@
         body {
             padding: 0px;
             margin: 0px;
+            width: 100%;
+            background-color: #e1e1e1;
         }
-        .list{
-            background-color:#e1e1e1;
-        }
+
         .link {
             float: left;
             border: 0px;
@@ -19,18 +20,22 @@
             margin-bottom: 3px;
             width: 50px;
         }
+
         .link a {
             font-size: 12px;
             color: #333333;
         }
-        .top{
+
+        .top {
             text-align: center;
+            width: 10px;
             height: 20px;
             border-bottom: 1px dashed #e1e1e1;
         }
-        .icon{
-            width:20px;
-            height: 20px;
+
+        .icon {
+            width: 25px;
+            height: 25px;
             z-index: 3;
         }
     </style>
@@ -38,38 +43,52 @@
 
 <body>
     <div>
-        <div class="top"><img src="./assets/img/close.png" class="icon"/></div>
-        <div class="list"></div>
+        <div class="top"><img src="./assets/img/close.png" class="icon" /></div>
+        <div id="list"></div>
     </div>
     <script type="text/javascript">
         var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "GOLD", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
         var lastSelect;
 
-        for (let idx in SYMBOLS) {
-            let symbol = SYMBOLS[idx];
-            $(".list").append("<div class=\"link\" id=\""+symbol+"\"><a  href=\"javascript:item_click(\'"+symbol+"\')\">" + symbol + "</a>");
+        function show_all() {
+            for (let idx in SYMBOLS) {
+                let symbol = SYMBOLS[idx];
+                $("#list").append("<div class=\"link\" id=\"" + symbol + "\"><a  href=\"javascript:item_click(\'" + symbol + "\')\">" + symbol + "</a>");
+            }
+            $("body").css('background-color', '#e1e1e1');
+            localStorage.setItem('hide', '0');
         }
 
-        function item_click(symbol){
-            console.log(symbol);
-            window.location.href = "metatrader4://chart/"+symbol+"m%23";
+        function hide_all(){
+            $("#list").empty();
+            $("body").css('background-color', 'transparent');
+            localStorage.setItem('hide', '1');
+        }
 
-            if(lastSelect){
-                lastSelect.css("background-color",'transparent');
-                lastSelect=undefined;
+        function item_click(symbol) {
+            console.log(symbol);
+            window.location.href = "metatrader4://chart/" + symbol + "m%23";
+
+            if (lastSelect) {
+                lastSelect.css("background-color", 'transparent');
+                lastSelect = undefined;
             }
 
-            let ele = $("#"+symbol);
-            ele.css("background-color",'red');
+            let ele = $("#" + symbol);
+            ele.css("background-color", 'red');
             lastSelect = ele;
         }
 
-        $(".icon").click(function(){
-            console.log("click"+window.WebAPI);
-            if(window.WebAPI){
-                window.WebAPI.close();
+        $(".icon").click(function () {
+            console.log("click" + window.WebAPI);
+            if (localStorage.getItem('hide') == '1') {
+                show_all();
+            } else {
+                hide_all();
             }
         });
+
+        show_all();
     </script>
 </body>
 
