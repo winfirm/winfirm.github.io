@@ -2,94 +2,267 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Symbol List</title>
-    <script type="text/javascript" src="./assets/js/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-    <style>
-        body {
-            padding: 0px;
-            margin: 0px;
-            width: 100%;
-            background-color: #e1e1e1;
-        }
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Symbol List</title>
+	<script type="text/javascript" src="./assets/js/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="./assets/js/lightweight-charts-v4.1.0.js" crossorigin="anonymous"></script>
+	<style>
+		body {
+			padding: 0px;
+			margin: 0px;
+			background-color: black;
+		}
 
-        .link {
-            float: left;
-            border: 0px;
-            margin-left: 5px;
-            margin-bottom: 3px;
-            width: 50px;
-        }
+		.icon {
+			width: 28px;
+			height: 28px;
+			z-index: 3;
+			position: absolute;
+			left: 0px;
+		}
 
-        .link a {
-            font-size: 12px;
-            color: #333333;
-        }
+		.list {
+			float: left;
+			padding: 0px;
+			background-color: white;
+		}
 
-        .top {
-            text-align: center;
-            width: 10px;
-            height: 20px;
-            border-bottom: 1px dashed #e1e1e1;
-        }
+		.link {
+			float: left;
+			border: 0px;
+			margin-left: 5px;
+			margin-top: 1px;
+			margin-bottom: 3px;
+			width: 52px;
+		}
 
-        .icon {
-            width: 25px;
-            height: 25px;
-            z-index: 3;
-        }
-    </style>
+		.link a {
+			font-size: 12px;
+			color: #333333;
+		}
+
+		.chart {
+			padding: 0px;
+		}
+	</style>
 </head>
 
 <body>
-    <div>
-        <div class="top"><img src="./assets/img/close.png" class="icon" /></div>
-        <div id="list"></div>
-    </div>
-    <script type="text/javascript">
-        var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "GOLD", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
-        var lastSelect;
+	<div>
+		<img src="./assets/img/close.png" class="icon" />
+		<div id="chart" class="chart"></div>
+		<div id="list" class="list"></div>
+	</div>
+	<script type="text/javascript">
+		var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
+		var lastSelect;
 
-        function show_all() {
-            for (let idx in SYMBOLS) {
-                let symbol = SYMBOLS[idx];
-                $("#list").append("<div class=\"link\" id=\"" + symbol + "\"><a  href=\"javascript:item_click(\'" + symbol + "\')\">" + symbol + "</a>");
-            }
-            $("body").css('background-color', '#e1e1e1');
-            localStorage.setItem('hide', '0');
-        }
+		function show_all() {
+			for (let idx in SYMBOLS) {
+				let symbol = SYMBOLS[idx];
+				$("#list").append("<div class=\"link\" id=\"" + symbol + "\"><a  href=\"javascript:item_click(\'" + symbol + "\')\">" + symbol + "</a>");
+			}
+			item_click('EURUSD');
 
-        function hide_all(){
-            $("#list").empty();
-            $("body").css('background-color', 'transparent');
-            localStorage.setItem('hide', '1');
-        }
+			$("body").css('background-color', 'black');
+			localStorage.setItem('hide', '0');
+		}
 
-        function item_click(symbol) {
-            console.log(symbol);
-            window.location.href = "metatrader4://chart/" + symbol + "m%23";
+		function hide_all() {
+			$("#list").empty();
+			$("#chart").empty();
 
-            if (lastSelect) {
-                lastSelect.css("background-color", 'transparent');
-                lastSelect = undefined;
-            }
+			$("body").css('background-color', 'transparent');
+			localStorage.setItem('hide', '1');
+		}
 
-            let ele = $("#" + symbol);
-            ele.css("background-color", 'red');
-            lastSelect = ele;
-        }
+		function item_click(symbol) {
+			console.log(symbol);
 
-        $(".icon").click(function () {
-            console.log("click" + window.WebAPI);
-            if (localStorage.getItem('hide') == '1') {
-                show_all();
-            } else {
-                hide_all();
-            }
-        });
+			if (lastSelect) {
+				lastSelect.css("background-color", 'transparent');
+				lastSelect = undefined;
+			}
 
-        show_all();
-    </script>
+			let ele = $("#" + symbol);
+			ele.css("background-color", 'red');
+			lastSelect = ele;
+
+			window.location.href = "metatrader4://chart/" + symbol + "m%23";
+			load_item_datas(symbol);
+		}
+
+		$(".icon").click(function () {
+			if (localStorage.getItem('hide') == '1') {
+				show_all();
+			} else {
+				hide_all();
+			}
+		});
+
+		function load_item_datas(symbol) {
+			let url = 'https://www.winfirm.com.cn/serv/index_json?symbol=' + symbol + '&times=D1';
+			$.ajax({
+				type: 'get',
+				url: url,
+				data: '',
+				traditional: true,
+				success: (json) => {
+					show_chart(JSON.parse(json).datas1);
+				}
+			});
+		}
+
+		function show_chart(datas) {
+			$("#chart").empty();
+			const chart = LightweightCharts.createChart(document.getElementById('chart'), getChartOption());
+			const mainPriceOption = {
+				scaleMargins: {
+					top: 0.05,
+					bottom: 0.3
+				},
+			};
+
+			show_candle(chart, datas.datas, mainPriceOption);
+			show_mas(chart, datas.mas, ['#ffffff', '#ff0000', '#9900ff'], mainPriceOption);
+
+			const macdPriceOption = {
+				scaleMargins: {
+					top: 0.7,
+					bottom: 0.01
+				},
+			};
+
+			show_histogram(chart, datas.macds[2], macdPriceOption);
+			let macd = datas.macds[0];
+			let signal = datas.macds[1];
+			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'macd');
+		}
+
+		function show_candle(chart, datas, priceOption) {
+			const candlestickSeries = chart.addCandlestickSeries({
+				upColor: '#ef5350', downColor: '#33cc00', borderVisible: false,
+				wickUpColor: '#ef5350', wickDownColor: '33cc00',
+				priceFormat: {
+					type: 'price',
+					precision: 6
+				}
+			});
+			candlestickSeries.priceScale().applyOptions(priceOption);
+			candlestickSeries.setData(datas);
+		}
+
+		function show_mas(chart, datasma, colors, priceOption, priceScaleId) {
+			let lineSeries;
+			for (let i = 0; i < datasma.length; i++) {
+				lineSeries = chart.addLineSeries({
+					priceScaleId,
+					color: colors[i],
+					lineWidth: 0.5,
+					priceLineVisible: false,
+					priceFormat: {
+						type: 'price',
+						precision: 6
+					}
+				});
+				lineSeries.priceScale().applyOptions(priceOption);
+				lineSeries.setData(datasma[i]);
+			}
+		}
+
+		function show_histogram(chart, histogram, priceOption) {
+			let histogramSeries = chart.addHistogramSeries({
+				color: '#33cc00',
+				priceLineVisible: false,
+				priceScaleId: 'macd',
+				priceFormat: {
+					type: 'volume',
+					precision: 6
+				}
+			});
+
+			histogramSeries.priceScale().applyOptions(priceOption);
+			histogramSeries.setData(histogram);
+		}
+
+		function timestampToString(timestamp) {
+			const date = new Date(timestamp * 1000);
+			const Y = date.getFullYear() + '-';
+			const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+			const D = date.getDate() + ' ';
+			const h = date.getHours() + ':';
+			const m = date.getMinutes()
+			return M + D + h + m;
+		}
+
+		function getChartOption() {
+			let width = screen.width * 0.60;
+			let height = screen.width * 0.50;
+			return {
+				width,
+				height,
+				timeScale: {
+					rightOffset: 3,
+					barSpacing: 3.5,
+					rightBarStaysOnScroll: true,
+					fixLeftEdge: false,
+					alignLabels: false,
+					lockVisibleTimeRangeOnResize: true,
+					borderVisible: false,
+					visible: false,
+					tickMarkFormatter: (time, tickMarkType, locale) => {
+						if (LightweightCharts.isUTCTimestamp(time)) {
+							return timestampToString(time);
+						} else {
+							return time;
+						}
+					},
+				},
+				rightPriceScale: {
+					visible: false,
+				},
+
+				layout: {
+					textColor: 'white',
+					background: { type: "solid", color: "#111111" }
+				},
+				localization: {
+					locale: 'en-US',
+					dateFormat: 'yyyy/MM/dd',
+					timeFormatter: businessDayOrTimestamp => {
+						if (LightweightCharts.isUTCTimestamp(businessDayOrTimestamp)) {
+							return timestampToString(businessDayOrTimestamp);
+						} else {
+							return businessDayOrTimestamp;
+						}
+					}
+				},
+				grid: {
+					vertLines: {
+						color: 'rgba(105 , 105 , 105 , 0.2)',
+					},
+					horzLines: {
+						color: 'rgba(105  , 105  , 105  , 0.2)',
+					}
+				},
+				crosshair: {
+					mode: 2,
+					vertLine: {
+						visible: false
+					},
+					horzLine: {
+						visible: false
+					}
+				},
+				handleScroll: {
+					horzTouchDrag: false,
+					vertTouchDrag: false,
+				}
+			};
+		}
+
+		show_all();
+	</script>
 </body>
 
 </html>
