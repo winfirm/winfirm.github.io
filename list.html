@@ -98,13 +98,11 @@
 
 		function load_item_datas(symbol) {
 			let url = 'https://www.winfirm.com.cn/serv/index_json?symbol=' + symbol + '&times=D1';
-			$.ajax({
-				type: 'get',
-				url: url,
-				data: '',
-				traditional: true,
-				success: (json) => {
-					show_chart(JSON.parse(json).datas1, symbol);
+			$.get(url, function (data, status) {
+				if ('success' == status) {
+					show_chart(JSON.parse(data).datas1, symbol);
+				} else {
+					alert('load data failed');
 				}
 			});
 		}
