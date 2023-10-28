@@ -51,30 +51,34 @@
 <body>
 	<div>
 		<img src="./assets/img/close.png" class="icon" />
-		<div id="chart" class="chart"></div>
-		<div id="list" class="list"></div>
+		<div id="root">
+			<div id="chart" class="chart"></div>
+			<div id="list" class="list"></div>
+		</div>
 	</div>
 	<script type="text/javascript">
+
+		$(".icon").click(function () {
+			if (localStorage.getItem('hide') == '1') {
+				$("#root").css("display", "block");
+				localStorage.setItem('hide', '0');
+			} else {
+				$("#root").css("display", "none");
+				localStorage.setItem('hide', '1');
+			}
+		});
+
 		var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
 		var lastSelect;
 
-		function show_all() {
+		function init_all() {
 			for (let idx in SYMBOLS) {
 				let symbol = SYMBOLS[idx];
 				$("#list").append("<div class=\"link\" id=\"" + symbol + "\"><a  href=\"javascript:item_click(\'" + symbol + "\')\">" + symbol + "</a>");
 			}
+
 			item_click('EURUSD');
-
-			$("body").css('background-color', 'transparent');
 			localStorage.setItem('hide', '0');
-		}
-
-		function hide_all() {
-			$("#list").empty();
-			$("#chart").empty();
-
-			$("body").css('background-color', 'transparent');
-			localStorage.setItem('hide', '1');
 		}
 
 		function item_click(symbol) {
@@ -90,16 +94,7 @@
 			lastSelect = ele;
 
 			load_item_datas(symbol);
-			window.location.href = "metatrader4://chart/" + symbol + "m%23";
 		}
-
-		$(".icon").click(function () {
-			if (localStorage.getItem('hide') == '1') {
-				show_all();
-			} else {
-				hide_all();
-			}
-		});
 
 		function load_item_datas(symbol) {
 			let url = 'https://www.winfirm.com.cn/serv/index_json?symbol=' + symbol + '&times=D1';
@@ -109,12 +104,12 @@
 				data: '',
 				traditional: true,
 				success: (json) => {
-					show_chart(JSON.parse(json).datas1);
+					show_chart(JSON.parse(json).datas1, symbol);
 				}
 			});
 		}
 
-		function show_chart(datas) {
+		function show_chart(datas, symbol) {
 			$("#chart").empty();
 			const chart = LightweightCharts.createChart(document.getElementById('chart'), getChartOption());
 			const mainPriceOption = {
@@ -138,6 +133,8 @@
 			let macd = datas.macds[0];
 			let signal = datas.macds[1];
 			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'macd');
+
+			window.location.href = "metatrader4://chart/" + symbol + "m%23";
 		}
 
 		function show_candle(chart, datas, priceOption) {
@@ -222,7 +219,6 @@
 				rightPriceScale: {
 					visible: false,
 				},
-
 				layout: {
 					textColor: 'white',
 					background: { type: "solid", color: "#111111" }
@@ -240,20 +236,14 @@
 				},
 				grid: {
 					vertLines: {
-						color: 'rgba(105 , 105 , 105 , 0.2)',
+						color: 'rgba(105 , 105 , 105 , 0.1)',
 					},
 					horzLines: {
-						color: 'rgba(105  , 105  , 105  , 0.2)',
+						color: 'rgba(105  , 105  , 105  , 0.1)',
 					}
 				},
 				crosshair: {
 					mode: 2,
-					vertLine: {
-						visible: false
-					},
-					horzLine: {
-						visible: false
-					}
 				},
 				handleScroll: {
 					horzTouchDrag: false,
@@ -262,7 +252,7 @@
 			};
 		}
 
-		show_all();
+		init_all();
 	</script>
 </body>
 
