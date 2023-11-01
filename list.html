@@ -75,15 +75,15 @@
 		function init_all() {
 			for (let idx in SYMBOLS) {
 				let symbol = SYMBOLS[idx];
-				$("#list").append("<div class=\"link\" id=\"" + symbol + "\" onclick=\"javascript:item_click('" + symbol + "')\">" + symbol + "</div>");
+				$("#list").append("<div class=\"link\" id=\"" + symbol + "\" onclick=\"javascript:item_click('" + symbol + "',true)\">" + symbol + "</div>");
 			}
 
-			item_click('EURUSD');
+			item_click('EURUSD', false);
 			localStorage.setItem('hide', '0');
 		}
 
-		function item_click(symbol) {
-			console.log(symbol);
+		function item_click(symbol, click) {
+			console.log(symbol+',click:'+click);
 
 			if (lastSelect) {
 				lastSelect.css("background-color", 'transparent');
@@ -94,10 +94,10 @@
 			ele.css("background-color", '#ef5350');
 			lastSelect = ele;
 
-			load_item_datas(symbol);
+			load_item_datas(symbol, click);
 		}
 
-		function load_item_datas(symbol) {
+		function load_item_datas(symbol, click) {
 			let url = 'https://www.winfirm.com.cn/serv/index_json?symbol=' + symbol + '&times=D1';
 
 			/*
@@ -107,14 +107,14 @@
 			xhrAjax('get',url, null, function(data){
 				let jsonData = JSON.parse(data);
 				if(jsonData){
-					show_chart(JSON.parse(data).datas1, symbol);
+					show_chart(JSON.parse(data).datas1, symbol, click);
 				}else{
 					alert('load data failed');
 				}
         	});
 		}
 
-		function show_chart(datas, symbol) {
+		function show_chart(datas, symbol, click) {
 			$("#chart").empty();
 			const chart = LightweightCharts.createChart(document.getElementById('chart'), getChartOption());
 			const mainPriceOption = {
@@ -139,6 +139,10 @@
 			let signal = datas.macds[1];
 			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'macd');
 
+			if(click==false){
+				return;
+			}
+			
 			if (window.WebAPI) {
 				window.WebAPI.openChart("metatrader4://chart/" + symbol + "m%23");
 			}
