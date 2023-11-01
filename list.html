@@ -34,9 +34,6 @@
 			margin-bottom: 2px;
 			width: 52px;
 			text-align: center;
-		}
-
-		.link a {
 			font-size: 12px;
 			color: #cccccc;
 		}
@@ -74,7 +71,7 @@
 		function init_all() {
 			for (let idx in SYMBOLS) {
 				let symbol = SYMBOLS[idx];
-				$("#list").append("<div class=\"link\" id=\"" + symbol + "\"><a  href=\"javascript:item_click(\'" + symbol + "\')\">" + symbol + "</a>");
+				$("#list").append("<div class=\"link\" id=\"" + symbol + "\" onclick=\"javascript:item_click('" + symbol + "')\">" + symbol + "</div>");
 			}
 
 			item_click('EURUSD');
@@ -132,7 +129,9 @@
 			let signal = datas.macds[1];
 			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'macd');
 
-			window.location.href = "metatrader4://chart/" + symbol + "m%23";
+			if (window.WebAPI) {
+				window.WebAPI.openChart("metatrader4://chart/" + symbol + "m%23");
+			}
 		}
 
 		function show_candle(chart, datas, priceOption) {
