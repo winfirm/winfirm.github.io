@@ -62,6 +62,10 @@
 			} else {
 				$("#root").css("display", "none");
 				localStorage.setItem('hide', '1');
+
+				if (window.WebAPI) {
+					window.WebAPI.toHome();
+				}
 			}
 		});
 
