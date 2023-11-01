@@ -23,23 +23,22 @@
 		.list {
 			float: left;
 			padding: 0px;
-			width: 235px;
-			background-color: #111111;
+			width: 186px;
+			background-color: #222222;
 		}
 
 		.link {
 			float: left;
-			border: 0px;
-			margin-left: 5px;
-			margin-bottom: 3px;
-			width: 52px;
-			text-align: center;
+			border: 1px dotted #666666;
+			margin: 2px 2px;
 			font-size: 12px;
 			color: #cccccc;
+			text-align: center;
+			width: 56px;
 		}
 
 		.chart {
-			width: 235px;
+			width: 186px;
 			padding: 0px;
 		}
 	</style>
@@ -83,7 +82,7 @@
 		}
 
 		function item_click(symbol, click) {
-			console.log(symbol+',click:'+click);
+			console.log(symbol + ',click:' + click);
 
 			if (lastSelect) {
 				lastSelect.css("background-color", 'transparent');
@@ -105,14 +104,14 @@
 			* use origin http request method, not jquery $.get() for some reasons.
 			* reference: https://blog.csdn.net/Angry_Mills/article/details/85170475
 			*/
-			xhrAjax('get',url, urlData, function(data){
+			xhrAjax('get', url, urlData, function (data) {
 				let jsonData = JSON.parse(data);
-				if(jsonData){
+				if (jsonData) {
 					show_chart(JSON.parse(data).datas1, symbol, click);
-				}else{
+				} else {
 					alert('load data failed');
 				}
-        	});
+			});
 		}
 
 		function show_chart(datas, symbol, click) {
@@ -121,16 +120,16 @@
 			const mainPriceOption = {
 				scaleMargins: {
 					top: 0.05,
-					bottom: 0.3
+					bottom: 0.25
 				},
 			};
 
 			show_candle(chart, datas.datas, mainPriceOption);
-			show_mas(chart, datas.mas, ['#ffffff', '#ff0000', '#9900ff'], mainPriceOption);
+			show_mas(chart, datas.mas, ['#ffffff', '#ff0000', '#0066ff'], mainPriceOption);
 
 			const macdPriceOption = {
 				scaleMargins: {
-					top: 0.7,
+					top: 0.75,
 					bottom: 0.01
 				},
 			};
@@ -138,12 +137,12 @@
 			show_histogram(chart, datas.macds[2], macdPriceOption);
 			let macd = datas.macds[0];
 			let signal = datas.macds[1];
-			show_mas(chart, [macd, signal], ['#ff0000', '#0000ff'], macdPriceOption, 'macd');
+			show_mas(chart, [macd, signal], ['#ffffff', '#ff0000'], macdPriceOption, 'macd');
 
-			if(click==false){
+			if (click == false) {
 				return;
 			}
-			
+
 			if (window.WebAPI) {
 				window.WebAPI.openChart("metatrader4://chart/" + symbol + "m%23");
 			}
@@ -206,8 +205,8 @@
 		}
 
 		function getChartOption() {
-			let width = 235;
-			let height = 190;
+			let width = 186;
+			let height = 168;
 			return {
 				width,
 				height,
@@ -233,7 +232,7 @@
 				},
 				layout: {
 					textColor: 'white',
-					background: { type: "solid", color: "#111111" }
+					background: { type: "solid", color: "#111222" }
 				},
 				localization: {
 					locale: 'en-US',
@@ -264,45 +263,45 @@
 			};
 		}
 
-		function xhrAjax(type, url, data, success, failed){
+		function xhrAjax(type, url, data, success, failed) {
 			var xhr = null;
-			if(window.XMLHttpRequest){
+			if (window.XMLHttpRequest) {
 				xhr = new XMLHttpRequest();
 			} else {
 				xhr = new ActiveXObject('Microsoft.XMLHTTP')
 			}
-		
+
 			var type = type.toUpperCase();
 			var random = Math.random();
-		
-			if(typeof data == 'object'){
+
+			if (typeof data == 'object') {
 				var str = '';
-				for(var key in data){
-					str += key+'='+data[key]+'&';
+				for (var key in data) {
+					str += key + '=' + data[key] + '&';
 				}
 				data = str.replace(/&$/, '');
 			}
-		
-			if(type == 'GET'){
-				if(data){
+
+			if (type == 'GET') {
+				if (data) {
 					xhr.open('GET', url + '?' + data, true);
 				} else {
 					xhr.open('GET', url + '&t=' + random, true);
 				}
 				xhr.send();
-		
-			} else if(type == 'POST'){
+
+			} else if (type == 'POST') {
 				xhr.open('POST', url, true);
 				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				xhr.send(data);
 			}
-		
-			xhr.onreadystatechange = function(){
-				if(xhr.readyState == 4){
-					if(xhr.status == 200){
+
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4) {
+					if (xhr.status == 200) {
 						success(xhr.responseText);
 					} else {
-						if(failed){
+						if (failed) {
 							failed(xhr.status);
 						}
 					}
