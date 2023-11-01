@@ -98,13 +98,14 @@
 		}
 
 		function load_item_datas(symbol, click) {
-			let url = 'https://www.winfirm.com.cn/serv/index_json?symbol=' + symbol + '&times=D1';
+			let url = 'https://www.winfirm.com.cn/serv/index_json';
+			let urlData = 'symbol=' + symbol + '&times=D1';
 
 			/*
 			* use origin http request method, not jquery $.get() for some reasons.
 			* reference: https://blog.csdn.net/Angry_Mills/article/details/85170475
 			*/
-			xhrAjax('get',url, null, function(data){
+			xhrAjax('get',url, urlData, function(data){
 				let jsonData = JSON.parse(data);
 				if(jsonData){
 					show_chart(JSON.parse(data).datas1, symbol, click);
@@ -286,7 +287,7 @@
 				if(data){
 					xhr.open('GET', url + '?' + data, true);
 				} else {
-					xhr.open('GET', url + '?t=' + random, true);
+					xhr.open('GET', url + '&t=' + random, true);
 				}
 				xhr.send();
 		
