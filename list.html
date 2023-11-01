@@ -5,6 +5,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Symbol List</title>
 	<script type="text/javascript" src="./assets/js/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="./assets/js/jquery.touch.js" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="./assets/js/lightweight-charts-v4.1.0.js" crossorigin="anonymous"></script>
 	<style>
 		body {
@@ -66,6 +67,8 @@
 
 		var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
 		var lastSelect;
+		var curSymbol = 'EURUSD';
+		var slength = SYMBOLS.length;
 
 		function init_all() {
 			for (let idx in SYMBOLS) {
@@ -79,6 +82,7 @@
 
 		function item_click(symbol, click) {
 			console.log(symbol + ',click:' + click);
+			curSymbol = symbol;
 
 			if (lastSelect) {
 				lastSelect.css("background-color", 'transparent');
@@ -88,6 +92,12 @@
 			let ele = $("#" + symbol);
 			ele.css("background-color", '#ef5350');
 			lastSelect = ele;
+
+			if (click == true) {
+				if (window.WebAPI) {
+					window.WebAPI.openChart("metatrader4://chart/" + symbol + "m%23");
+				}
+			}
 
 			load_item_datas(symbol, click);
 		}
@@ -134,14 +144,6 @@
 			let macd = datas.macds[0];
 			let signal = datas.macds[1];
 			show_mas(chart, [macd, signal], ['#ffffff', '#ff0000'], macdPriceOption, 'macd');
-
-			if (click == false) {
-				return;
-			}
-
-			if (window.WebAPI) {
-				window.WebAPI.openChart("metatrader4://chart/" + symbol + "m%23");
-			}
 		}
 
 		function show_candle(chart, datas, priceOption) {
@@ -305,6 +307,56 @@
 			}
 		}
 
+		var pageScreenX = 0;
+		var pageScreenY = 0;
+		function handler(e) {
+			if (e.originalType == "touchstart") {
+				pageScreenX = e.pageX; pageScreenY = e.pageY
+			} else if (e.originalType == "touchend") {
+				if (e.pageY - pageScreenY > 100 && pageScreenX - e.pageX < 50) {
+					pre_symbol()
+				} else if (pageScreenY - e.pageY > 100 && pageScreenX - e.pageX < 50) {
+					next_symbol()
+				}
+			}
+		}
+
+		function getIndex() {
+			for (let i in SYMBOLS) {
+				if (curSymbol == SYMBOLS[i]) {
+					console.log(i);
+					return i;
+				}
+			}
+			return 0;
+		}
+
+		function pre_symbol() {
+			let index = getIndex();
+			if (index > 0) {
+				item_click(SYMBOLS[index - 1], true);
+			} else {
+				item_click(SYMBOLS[0], true);
+			}
+		}
+
+		function next_symbol() {
+			let index = getIndex();
+			if (index < SYMBOLS.length - 1) {
+				item_click(SYMBOLS[parseInt(index) + 1], true);
+			} else {
+				item_click(SYMBOLS[index], true);
+			}
+		}
+
+		function init_touch() {
+			$("#root").touchInit({ preventDefault: false });
+			$("#root").on("touch_start", handler);
+			$("#root").on("touch_move", handler);
+			$("#root").on("touch_end", handler);
+		}
+
+		init_touch();
 		init_all();
 	</script>
 </body>
