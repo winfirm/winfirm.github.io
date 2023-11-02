@@ -9,8 +9,10 @@
 	<script type="text/javascript" src="./assets/js/lightweight-charts-v4.1.0.js" crossorigin="anonymous"></script>
 	<style>
 		body {
+			width: 100%;
 			padding: 0px;
 			margin: 0px;
+			background-color: transparent;
 		}
 
 		.icon {
@@ -21,37 +23,34 @@
 			left: 0px;
 		}
 
-		.list {
-			float: left;
+		.chart {
+			clear: both;
+			width: 100%;
 			padding: 0px;
-			width: 186px;
-			background-color: #222222;
+
+		}
+
+		.list {
+			padding-top: 5px;
+			width: 100%;
 		}
 
 		.link {
 			float: left;
-			border: 1px dotted #666666;
 			margin: 2px 2px;
 			font-size: 12px;
 			color: #cccccc;
 			text-align: center;
-			width: 56px;
-		}
-
-		.chart {
-			width: 186px;
-			padding: 0px;
+			width: 50px;
 		}
 	</style>
 </head>
 
 <body>
-	<div>
-		<img src="./assets/img/fullscreen.png" class="icon" />
-		<div id="root">
-			<div id="chart" class="chart"></div>
-			<div id="list" class="list"></div>
-		</div>
+	<img src="./assets/img/fullscreen.png" class="icon" />
+	<div id="root" class="root">
+		<div id="chart" class="chart"></div>
+		<div id="list" class="list"></div>
 	</div>
 	<script type="text/javascript">
 
@@ -59,6 +58,7 @@
 			if (localStorage.getItem('hide') == '1') {
 				$("#root").css("display", "block");
 				localStorage.setItem('hide', '0');
+				item_click(curSymbol, true);
 			} else {
 				$("#root").css("display", "none");
 				localStorage.setItem('hide', '1');
@@ -66,16 +66,15 @@
 		});
 
 		var SYMBOLS = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "EURGBP", "EURJPY", "EURCHF", "EURAUD", "EURCAD", "EURNZD", "GBPJPY", "GBPCHF", "GBPAUD", "GBPCAD", "GBPNZD", "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "CADJPY", "CADCHF", "NZDJPY", "NZDCHF", "NZDCAD", "CHFJPY"];
-		var lastSelect;
 		var curSymbol = 'EURUSD';
 		var slength = SYMBOLS.length;
+		var lastSelect;
 
 		function init_all() {
 			for (let idx in SYMBOLS) {
 				let symbol = SYMBOLS[idx];
 				$("#list").append("<div class=\"link\" id=\"" + symbol + "\" onclick=\"javascript:item_click('" + symbol + "',true)\">" + symbol + "</div>");
 			}
-
 			item_click('EURUSD', false);
 			localStorage.setItem('hide', '0');
 		}
@@ -101,7 +100,7 @@
 		}
 
 		function onDateReceived(symbol, data) {
-			console.log('onDateReceived:'+symbol);
+			console.log('onDateReceived:' + symbol);
 
 			let jsonData = JSON.parse(data);
 			if (jsonData) {
@@ -194,14 +193,14 @@
 		}
 
 		function getChartOption() {
-			let width = 186;
-			let height = 168;
+			let width = 320;
+			let height = 180;
 			return {
 				width,
 				height,
 				timeScale: {
-					rightOffset: 3,
-					barSpacing: 3.5,
+					rightOffset: 1,
+					barSpacing: 3.75,
 					rightBarStaysOnScroll: true,
 					fixLeftEdge: false,
 					alignLabels: false,
@@ -221,7 +220,7 @@
 				},
 				layout: {
 					textColor: 'white',
-					background: { type: "solid", color: "#111222" }
+					background: { type: "solid", color: 'transparent' }
 				},
 				localization: {
 					locale: 'en-US',
