@@ -95,29 +95,20 @@
 
 			if (click == true) {
 				if (window.WebAPI) {
-					window.WebAPI.openChart("metatrader4://chart/" + symbol + "m%23");
+					window.WebAPI.openChart(symbol);
 				}
 			}
-
-			load_item_datas(symbol, click);
 		}
 
-		function load_item_datas(symbol, click) {
-			let url = 'https://www.winfirm.com.cn/serv/index_json';
-			let urlData = 'symbol=' + symbol + '&times=D1';
+		function onDateReceived(symbol, data) {
+			console.log('onDateReceived:'+symbol);
 
-			/*
-			* use origin http request method, not jquery $.get() for some reasons.
-			* reference: https://blog.csdn.net/Angry_Mills/article/details/85170475
-			*/
-			xhrAjax('get', url, urlData, function (data) {
-				let jsonData = JSON.parse(data);
-				if (jsonData) {
-					show_chart(JSON.parse(data).datas1, symbol, click);
-				} else {
-					alert('load data failed');
-				}
-			});
+			let jsonData = JSON.parse(data);
+			if (jsonData) {
+				show_chart(JSON.parse(data).datas1, symbol, true);
+			} else {
+				alert('load data failed');
+			}
 		}
 
 		function show_chart(datas, symbol, click) {
@@ -259,52 +250,6 @@
 					vertTouchDrag: false,
 				}
 			};
-		}
-
-		function xhrAjax(type, url, data, success, failed) {
-			var xhr = null;
-			if (window.XMLHttpRequest) {
-				xhr = new XMLHttpRequest();
-			} else {
-				xhr = new ActiveXObject('Microsoft.XMLHTTP')
-			}
-
-			var type = type.toUpperCase();
-			var random = Math.random();
-
-			if (typeof data == 'object') {
-				var str = '';
-				for (var key in data) {
-					str += key + '=' + data[key] + '&';
-				}
-				data = str.replace(/&$/, '');
-			}
-
-			if (type == 'GET') {
-				if (data) {
-					xhr.open('GET', url + '?' + data, true);
-				} else {
-					xhr.open('GET', url + '&t=' + random, true);
-				}
-				xhr.send();
-
-			} else if (type == 'POST') {
-				xhr.open('POST', url, true);
-				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-				xhr.send(data);
-			}
-
-			xhr.onreadystatechange = function () {
-				if (xhr.readyState == 4) {
-					if (xhr.status == 200) {
-						success(xhr.responseText);
-					} else {
-						if (failed) {
-							failed(xhr.status);
-						}
-					}
-				}
-			}
 		}
 
 		var pageScreenX = 0;
