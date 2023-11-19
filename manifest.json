@@ -1,6 +1,6 @@
 {
-  "short_name": "Charts",
-  "name": "Charts by react",
+  "short_name": "Chart App",
+  "name": "Chart App Demo",
   "icons": [
     {
       "src": "favicon.ico",
