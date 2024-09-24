@@ -192,7 +192,7 @@
 			}
 
 			loadDatas = (symbol) => {
-				fetch("https://chart.winfirm.com.cn/datas/"+ symbol + "m%23")
+				fetch("https://chart.winfirm.com.cn/datas/klines/"+ symbol + "m%23")
 					.then(res => {
 						return res.json();
 					}).then(data => {
