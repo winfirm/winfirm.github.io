@@ -196,7 +196,7 @@
 					.then(res => {
 						return res.json();
 					}).then(data => {
-						this.show_candle(symbol, this.chart, data.datas1);
+						this.show_candle(symbol, this.chart, data.H1);
 					}).catch(e => {
 						console.log(e)
 					});
